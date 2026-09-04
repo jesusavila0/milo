@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- ── Directivas Anti-Caché para navegadores ── -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <title>Rated Games — Reseñas y clasificaciones</title>
+
+  <!-- Tailwind CSS vía CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tipografías: Rajdhani + Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Estilos propios (con auto-renovación diaria de caché) -->
+  <script>
+    // Inyecta el styles.css con la fecha del día actual para evitar caché obsoleta
+    const fechaHoy = new Date().toISOString().slice(0, 10);
+    const linkCSS = document.createElement("link");
+    linkCSS.rel = "stylesheet";
+    linkCSS.href = `styles.css?v=${fechaHoy}`;
+    document.head.appendChild(linkCSS);
+  </script>
+</head>
+<body class="rg-body">
+
+  <!-- ===================== CABECERA ===================== -->
+  <header class="rg-header">
+    <div class="rg-header__inner">
+      <a href="#" class="rg-logo" aria-label="Rated Games, inicio">
+        <span class="rg-logo__icon">▶</span>
+        <span class="rg-logo__text">RATED<span class="rg-logo__accent">GAMES</span></span>
+      </a>
+
+      <!-- Buscador -->
+      <form id="search-form" class="rg-search" role="search" autocomplete="off">
+        <svg class="rg-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+          <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input
+          id="search-input"
+          type="text"
+          class="rg-search__input"
+          placeholder="Busca cualquier juego: Zelda, Mario, Elden Ring, Bloodborne…"
+          aria-label="Buscar juego"
+        />
+        <button type="submit" class="rg-search__button">
+          Buscar / Añadir
+        </button>
+      </form>
+    </div>
+  </header>
+
+  <!-- ===================== CONTENIDO PRINCIPAL ===================== -->
+  <main class="rg-main">
+
+    <section class="rg-intro">
+      <h1 class="rg-intro__title">La cartelera de <span>Rated Games</span></h1>
+      <p class="rg-intro__subtitle">
+        Notas especializadas junto al veredicto real de
+        Milo y Jesús. Cualquier juego de cualquier consola que busques
+        se añadirá en directo para ambos.
+      </p>
+    </section>
+
+    <!-- Estado del buscador -->
+    <p id="search-status" class="rg-search-status" role="status" aria-live="polite"></p>
+
+    <!-- Contenedor donde se renderizan las tarjetas -->
+    <section id="games-grid" class="rg-grid" aria-label="Catálogo de juegos">
+      <!-- Las tarjetas se insertan dinámicamente desde app.js -->
+    </section>
+
+    <!-- Estado vacío -->
+    <div id="empty-state" class="rg-empty" hidden>
+      <p class="rg-empty__title">Tu cartelera está vacía</p>
+      <p class="rg-empty__text">
+        Busca arriba cualquier juego para incorporarlo a vuestra cartelera en tiempo real.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- ===================== MODAL SELECTOR DE JUEGOS ===================== -->
+  <div id="search-modal" class="rg-modal" hidden>
+    <div class="rg-modal__backdrop" id="modal-backdrop"></div>
+    <div class="rg-modal__content">
+      <div class="rg-modal__header">
+        <h2 class="rg-modal__title">Elige el juego para añadir</h2>
+        <button id="modal-close" class="rg-modal__close" type="button" aria-label="Cerrar ventana">✕</button>
+      </div>
+      <div id="modal-results" class="rg-modal__grid">
+        <!-- Tarjetas de juegos encontrados -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Plantilla de tarjeta de juego -->
+  <template id="game-card-template">
+    <article class="rg-card">
+      <div class="rg-card__cover-wrap">
+        <img class="rg-card__cover" src="" alt="" loading="lazy" />
+        <span class="rg-card__badge-nuevo" hidden>Nuevo</span>
+        <div class="rg-card__cover-gradient"></div>
+        <div class="rg-card__cover-text">
+          <h2 class="rg-card__title"></h2>
+          <p class="rg-card__meta"></p>
+        </div>
+      </div>
+
+      <div class="rg-card__body">
+
+        <!-- Bloque 1: notas automáticas de prensa -->
+        <div class="rg-scores">
+          <div class="rg-score" data-source="metacritic">
+            <span class="rg-score__label">Metacritic</span>
+            <span class="rg-score__value"></span>
+          </div>
+          <div class="rg-score" data-source="ign">
+            <span class="rg-score__label">IGN</span>
+            <span class="rg-score__value"></span>
+          </div>
+          <div class="rg-score" data-source="steam">
+            <span class="rg-score__label">Steam</span>
+            <span class="rg-score__value"></span>
+          </div>
+        </div>
+
+        <div class="rg-divider">
+          <span>Opinión del equipo</span>
+        </div>
+
+        <!-- Bloque 2: notas de Milo y Jesús -->
+        <div class="rg-opinions">
+          <div class="rg-opinion" data-reviewer="milo">
+            <span class="rg-opinion__avatar">M</span>
+            <span class="rg-opinion__name">Milo</span>
+            <button type="button" class="rg-opinion__value" data-editable="milo"></button>
+          </div>
+          <div class="rg-opinion" data-reviewer="jesus">
+            <span class="rg-opinion__avatar">J</span>
+            <span class="rg-opinion__name">Jesús</span>
+            <button type="button" class="rg-opinion__value" data-editable="jesus"></button>
+          </div>
+        </div>
+
+      </div>
+    </article>
+  </template>
+
+  <!-- Plantilla esqueleto (carga simulada) -->
+  <template id="skeleton-card-template">
+    <article class="rg-card rg-card--skeleton" aria-hidden="true">
+      <div class="rg-skeleton rg-skeleton--cover"></div>
+      <div class="rg-card__body">
+        <div class="rg-skeleton rg-skeleton--line" style="width: 70%"></div>
+        <div class="rg-skeleton rg-skeleton--line" style="width: 40%"></div>
+        <div class="rg-skeleton rg-skeleton--line" style="width: 90%"></div>
+      </div>
+    </article>
+  </template>
+
+  <footer class="rg-footer">
+    <p>Rated Games — Sincronizado en directo con Firebase.</p>
+  </footer>
+
+  <!-- ── Carga dinámica de app.js con renovación de caché automática diaria ── -->
+  <script>
+    const diaActual = new Date().toISOString().slice(0, 10); // Ej: 2026-09-04
+    const scriptApp = document.createElement("script");
+    scriptApp.type = "module";
+    scriptApp.src = `app.js?cache_bust=${diaActual}`;
+    document.body.appendChild(scriptApp);
+  </script>
+</body>
+</html>
+```
