@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <!-- ── Directivas Anti-Caché para navegadores ── -->
+  <!-- ── Directivas Anti-Caché ── -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
@@ -22,15 +22,8 @@
     rel="stylesheet"
   />
 
-  <!-- Estilos propios (con auto-renovación diaria de caché) -->
-  <script>
-    // Inyecta el styles.css con la fecha del día actual para evitar caché obsoleta
-    const fechaHoy = new Date().toISOString().slice(0, 10);
-    const linkCSS = document.createElement("link");
-    linkCSS.rel = "stylesheet";
-    linkCSS.href = `styles.css?v=${fechaHoy}`;
-    document.head.appendChild(linkCSS);
-  </script>
+  <!-- ── CSS forzado a versión 2.0 (obliga al móvil a cargar las 2 columnas ya) ── -->
+  <link rel="stylesheet" href="styles.css?v=2.0" />
 </head>
 <body class="rg-body">
 
@@ -175,14 +168,7 @@
     <p>Rated Games — Sincronizado en directo con Firebase.</p>
   </footer>
 
-  <!-- ── Carga dinámica de app.js con renovación de caché automática diaria ── -->
-  <script>
-    const diaActual = new Date().toISOString().slice(0, 10); // Ej: 2026-09-04
-    const scriptApp = document.createElement("script");
-    scriptApp.type = "module";
-    scriptApp.src = `app.js?cache_bust=${diaActual}`;
-    document.body.appendChild(scriptApp);
-  </script>
+  <!-- ── JavaScript con versión forzada v=2.0 ── -->
+  <script type="module" src="app.js?v=2.0"></script>
 </body>
 </html>
-```
